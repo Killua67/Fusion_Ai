@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fusion AI</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        
+        #webviews-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 10px;
+            flex-grow: 1;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        
+        webview {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #input-container {
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .action-button {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            min-width: 42px;
+        }
+
+        .action-button:hover {
+            background-color: #f5f5f5;
+            border-color: #d0d0d0;
+        }
+
+        .action-button:active {
+            background-color: #e8e8e8;
+        }
+
+        .action-button svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background-color: #ffffff;
+        }
+
+        #user-input:focus {
+            border-color: #2196F3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div id="webviews-container">
+        <webview id="chatgpt" src="https://chat.openai.com/" partition="persist:chatgpt"></webview>
+        <webview id="claude" src="https://claude.ai/new" partition="persist:claude"></webview>
+        <webview id="gemini" src="https://gemini.google.com/app" partition="persist:gemini"></webview>
+        <webview id="grok" src="https://grok.com/" partition="persist:grok"></webview>
+    </div>
+
+    <div id="input-container">
+        <button id="home-button" class="action-button" title="返回主页">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+        </button>
+        <button id="refresh-button" class="action-button" title="刷新所有页面">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+            </svg>
+        </button>
+        <input type="text" id="user-input" placeholder="输入消息后按回车发送到所有AI助手...">
+    </div>
+
+    <script>
+        const userInput = document.getElementById('user-input');
+        const refreshButton = document.getElementById('refresh-button');
+        const homeButton = document.getElementById('home-button');
+        const webviews = document.querySelectorAll('webview');
+        
+        // 主页 URL 映射
+        const homeUrls = {
+            chatgpt: 'https://chatgpt.com/',
+            claude: 'https://claude.ai/new',
+            gemini: 'https://gemini.google.com/app',
+            grok: 'https://grok.com/'
+        };
+
+        // 输入框选择器映射
+        const inputSelectors = {
+            chatgpt: {
+                input: '#prompt-textarea',
+                submit: 'form button[type="submit"]'
+            },
+            claude: {
+                input: '.ProseMirror',
+                submit: 'button[type="submit"]'
+            },
+            gemini: {
+                input: '//*[@id="app-root"]/main/side-navigation-v2/mat-sidenav-container/mat-sidenav-content/div/div[2]/chat-window/div/input-container/div/input-area-v2/div/div/div[2]/div/div/rich-textarea/div[1]',
+                submit: 'button[aria-label="Send message"]'
+            },
+            grok: {
+                input: '/html/body/div/div/main/div[2]/div[2]/div/form/div/div/div[1]/textarea',
+                placeholder: '.relative.z-10 span.absolute',
+                submit: 'form button[type="submit"]'
+            }
+        };
+
+        // 主页按钮点击事件
+        homeButton.addEventListener('click', () => {
+            webviews.forEach(webview => {
+                const id = webview.id;
+                if (homeUrls[id]) {
+                    webview.loadURL(homeUrls[id]);
+                }
+            });
+        });
+        
+        // 刷新按钮点击事件
+        refreshButton.addEventListener('click', () => {
+            const refreshIcon = refreshButton.querySelector('svg');
+            refreshIcon.classList.add('spinning');
+            
+            webviews.forEach(webview => {
+                webview.reload();
+            });
+            
+            // 3秒后移除旋转动画
+            setTimeout(() => {
+                refreshIcon.classList.remove('spinning');
+            }, 3000);
+        });
+
+        // 等待所有 webview DOM 加载完成
+        webviews.forEach(webview => {
+            webview.addEventListener('dom-ready', () => {
+                // 可以在这里注入自定义 CSS
+                webview.insertCSS(`
+                    /* 隐藏每个网站原有的输入框，具体选择器需要根据实际情况调整 */
+                    .chat-input-box { display: none !important; }
+                    
+                    // /* 处理Grok的提示词 */
+                    // .relative.z-10 span.absolute {
+                    //     opacity: 0 !important;
+                    //     pointer-events: none !important;
+                    // }
+                    
+                    .relative.z-10 textarea:focus + span.absolute {
+                        opacity: 0 !important;
+                    }
+                `);
+            });
+        });
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        userInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                const message = userInput.value;
+                
+                // 向每个 webview 发送消息
+                webviews.forEach(webview => {
+                    const id = webview.id;
+                    const selectors = inputSelectors[id];
+                    
+                    if (!selectors) return;
+
+                    // 注入脚本模拟输入和发送
+                    webview.executeJavaScript(`
+                        (async function() {
+                            try {
+                                let inputElement;
+                                
+                                // 根据不同网站使用不同的选择器策略
+                                if ('${id}' === 'gemini') {
+                                    // 使用 XPath 查找输入元素
+                                    const inputElement = document.evaluate('${selectors.input}', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                                    // 设置文本内容
+                                    if (inputElement.tagName.toLowerCase() === 'textarea') {
+                                        inputElement.value = "${message}";
+                                    } else {
+                                        inputElement.textContent = "${message}";
+                                    }
+                                    // 模拟按键事件
+                                    const keyEvent = new KeyboardEvent('keydown', {
+                                        key: 'Enter',
+                                        code: 'Enter',
+                                        keyCode: 13,
+                                        which: 13,
+                                        bubbles: true
+                                    });   
+                                    inputElement.dispatchEvent(keyEvent);
+                                } else if ('${id}' === 'grok') {
+                                    // 使用XPath选择器查找Grok的输入框
+                                    // 定义可能的XPath路径
+                                    const xpaths = [
+                                        '/html/body/div/div/main/div[2]/div[2]/div/form/div/div/div[1]/textarea',
+                                        '/html/body/div/div/main/div[2]/div[2]/div/div/form/div/div/div[1]/textarea'
+                                    ];
+                                    
+                                    // 尝试所有可能的XPath
+                                    for (const xpath of xpaths) {
+                                        const result = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+                                        const element = result.singleNodeValue;
+                                        if (element) {
+                                            inputElement = element;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // 如果还是找不到，尝试使用CSS选择器
+                                    if (!inputElement) {
+                                        inputElement = document.querySelector('form textarea');
+                                    }
+                                    
+                                    if (inputElement) {
+                                        // 隐藏提示词
+                                        const placeholder = document.querySelector('.relative.z-10 span.absolute');
+                                        if (placeholder) {
+                                            placeholder.style.opacity = '0';
+                                            placeholder.style.pointerEvents = 'none';
+                                        }
+                                        
+                                        // 清除现有内容
+                                        inputElement.value = '';
+                                        
+                                        // 聚焦输入框
+                                        inputElement.focus();
+                                        await new Promise(r => setTimeout(r, 100));
+                                        
+                                        // 模拟真实的输入过程
+                                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+                                        nativeInputValueSetter.call(inputElement, "${message}");
+                                        
+                                        // 触发React的input事件
+                                        const reactInputEvent = new Event('input', { bubbles: true, composed: true });
+                                        Object.defineProperty(reactInputEvent, 'target', {value: inputElement});
+                                        Object.defineProperty(reactInputEvent, 'currentTarget', {value: inputElement});
+                                        inputElement.dispatchEvent(reactInputEvent);
+                                        
+                                        // 等待React状态更新
+                                        await new Promise(r => setTimeout(r, 100));
+                                        
+                                        // 触发React的change事件
+                                        const reactChangeEvent = new Event('change', { bubbles: true });
+                                        Object.defineProperty(reactChangeEvent, 'target', {value: inputElement});
+                                        Object.defineProperty(reactChangeEvent, 'currentTarget', {value: inputElement});
+                                        inputElement.dispatchEvent(reactChangeEvent);
+                                        
+                                        // 等待React状态更新
+                                        await new Promise(r => setTimeout(r, 100));
+                                        
+                                        // 查找表单元素
+                                        const form = inputElement.closest('form');
+                                        if (form) {
+                                            // 触发表单的input事件
+                                            const formInputEvent = new Event('input', { bubbles: true });
+                                            form.dispatchEvent(formInputEvent);
+                                            
+                                            // 等待表单状态更新
+                                            await new Promise(r => setTimeout(r, 100));
+                                            
+                                            // 查找并点击提交按钮
+                                            const submitButton = form.querySelector('button[type="submit"]');
+                                            if (submitButton) {
+                                                // 移除disabled属性
+                                                submitButton.removeAttribute('disabled');
+                                                
+                                                // 触发点击事件
+                                                const clickEvent = new MouseEvent('click', {
+                                                    bubbles: true,
+                                                    cancelable: true,
+                                                    view: window
+                                                });
+                                                submitButton.dispatchEvent(clickEvent);
+                                            }
+                                        }
+                                    }
+                                } else if ('${id}' === 'chatgpt' || '${id}' === 'claude') {
+                                    // ChatGPT 和 Claude 的处理逻辑
+                                    inputElement = document.querySelector('${selectors.input}');
+                                    
+                                    if (inputElement) {
+                                        // 清除现有内容
+                                        if (inputElement.tagName.toLowerCase() === 'textarea') {
+                                            inputElement.value = '';
+                                        } else {
+                                            inputElement.innerHTML = '';
+                                        }
+                                        await new Promise(r => setTimeout(r, 100));
+
+                                        // 设置新内容
+                                        if (inputElement.tagName.toLowerCase() === 'textarea') {
+                                            inputElement.value = "${message}";
+                                        } else {
+                                            inputElement.textContent = "${message}";
+                                        }
+
+                                        // 触发必要的事件
+                                        inputElement.dispatchEvent(new Event('input', { bubbles: true }));
+                                        await new Promise(r => setTimeout(r, 100));
+                                        inputElement.dispatchEvent(new Event('change', { bubbles: true }));
+                                        await new Promise(r => setTimeout(r, 100));
+
+                                        // 触发Enter键事件
+                                        const enterEvent = new KeyboardEvent('keydown', {
+                                            key: 'Enter',
+                                            code: 'Enter',
+                                            keyCode: 13,
+                                            which: 13,
+                                            shiftKey: false,
+                                            ctrlKey: true,
+                                            bubbles: true
+                                        });
+                                        inputElement.dispatchEvent(enterEvent);
+                                    }
+                                }
+                                
+                            } catch (error) {
+                                console.error('Error injecting message:', error);
+                            }
+                        })();
+                    `);
+                });
+                
+                userInput.value = '';
+            }
+        });
+    </script>
+</body>
+</html> 
