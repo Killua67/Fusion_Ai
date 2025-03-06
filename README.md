@@ -2,6 +2,8 @@
 
 一个集成多个 AI 聊天界面的桌面应用程序。
 
+[![Build and Release](https://github.com/Killua67/Fusion_Ai/actions/workflows/build.yml/badge.svg)](https://github.com/Killua67/Fusion_Ai/actions/workflows/build.yml)
+
 ## 项目简介
 
 Fusion AI 是一个基于 Electron 开发的跨平台桌面应用，旨在为用户提供一个统一的 AI 聊天平台，让用户可以在同一个界面中使用多个 AI 服务。
@@ -69,6 +71,36 @@ yarn build
 - 采用现代化的 UI 设计
 - 支持自定义主题
 
+### 构建说明
+
+项目使用 GitHub Actions 自动构建所有平台的安装包。每当推送新的版本标签（tag）时，会自动触发构建流程：
+
+1. 本地创建新版本：
+```bash
+# 更新 package.json 中的版本号后
+git add .
+git commit -m "bump version to x.x.x"
+git tag vx.x.x
+git push && git push --tags
+```
+
+2. 手动构建特定平台版本：
+```bash
+# macOS
+yarn build:mac
+
+# Windows
+yarn build:win
+
+# Linux
+yarn build:linux
+
+# 构建所有平台（需要在对应平台上执行）
+yarn build
+```
+
+构建产物将保存在 `dist` 目录下。
+
 ## 贡献指南
 
 欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
@@ -86,3 +118,11 @@ MIT License
 - Claude
 - Gemini
 - Grok 
+
+## 下载安装
+
+你可以直接从 [GitHub Releases](https://github.com/Killua67/Fusion_Ai/releases) 页面下载最新版本的安装包：
+
+- macOS: 下载 `.dmg` 文件
+- Windows: 下载 `.exe` 文件
+- Linux: 下载 `.AppImage` 文件

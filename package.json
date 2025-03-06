@@ -5,7 +5,10 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
   },
   "author": "",
   "license": "MIT",
@@ -24,6 +27,24 @@
       "category": "public.app-category.productivity",
       "icon": "build/icon.png",
       "target": ["dmg", "zip"]
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64", "arm64"]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "target": ["AppImage", "deb", "rpm"],
+      "category": "Utility"
     },
     "dmg": {
       "contents": [
