@@ -8,6 +8,14 @@
 
 Fusion AI 是一个基于 Electron 开发的跨平台桌面应用，旨在为用户提供一个统一的 AI 聊天平台，让用户可以在同一个界面中使用多个 AI 服务。
 
+![Fusion AI 界面截图](img.png)
+
+软件支持多种 AI 模型:
+- ChatGPT
+- Claude
+- Gemini
+- Grok
+
 ## 功能特点
 
 - 多 AI 平台集成
@@ -164,16 +172,6 @@ yarn build
 2. 选择 "Build and Release" 工作流
 3. 点击 "Run workflow" 按钮
 4. 选择分支并确认
-
-## 软件界面展示
-
-![Fusion AI 界面截图](img.png)
-
-软件支持多种 AI 模型:
-- ChatGPT
-- Claude
-- Gemini
-- Grok 
 
 ## 贡献指南
 
