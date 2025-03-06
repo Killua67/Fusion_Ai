@@ -20,6 +20,20 @@ Fusion AI 是一个基于 Electron 开发的跨平台桌面应用，旨在为用
 - Node.js >= 14.0.0
 - Yarn 包管理器
 
+### 安装 Yarn
+
+1. 使用 npm 安装 Yarn（需要先安装 Node.js）：
+```bash
+npm install -g yarn
+```
+
+2. 验证安装：
+```bash
+yarn --version
+```
+
+如果你使用其他操作系统，也可以参考 [Yarn 官方安装指南](https://classic.yarnpkg.com/en/docs/install)。
+
 ### 安装步骤
 
 1. 克隆项目
