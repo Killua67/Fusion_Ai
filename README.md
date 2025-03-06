@@ -15,7 +15,56 @@ Fusion AI 是一个基于 Electron 开发的跨平台桌面应用，旨在为用
 - 跨平台支持（macOS、Windows、Linux）
 - 简洁现代的用户界面
 
-## 安装说明
+## 下载安装
+
+你可以直接从 [GitHub Releases](https://github.com/Killua67/Fusion_Ai/releases) 页面下载最新版本的安装包。
+
+### 各平台安装包说明
+
+#### macOS 安装包
+- **文件格式**: `.dmg` 和 `.zip`
+- **支持架构**: 
+  - Universal (同时支持 Intel x64 和 Apple Silicon arm64)
+- **安装方法**:
+  - `.dmg`: 双击打开，将应用拖到 Applications 文件夹
+  - `.zip`: 解压后得到应用程序
+
+#### Windows 安装包
+- **文件格式**:
+  - `Fusion.AI.Setup.1.0.0.exe` - 安装版
+  - `Fusion.AI.1.0.0.exe` - 便携版
+- **支持架构**:
+  - x64 (64位 Intel/AMD 处理器)
+  - arm64 (ARM 架构处理器，如 Surface Pro X)
+- **安装方法**:
+  - 安装版: 双击运行安装程序，按照向导完成安装
+  - 便携版: 双击直接运行，无需安装
+
+#### Linux 安装包
+- **文件格式**:
+  - `.AppImage` - 通用 Linux 应用格式
+  - `.deb` - Debian/Ubuntu 系列发行版安装包
+  - `.rpm` - Red Hat/Fedora/CentOS 系列发行版安装包
+- **支持架构**:
+  - x64 (64位)
+- **安装方法**:
+  - `.AppImage`: 添加执行权限后直接运行 (`chmod +x *.AppImage`)
+  - `.deb`: 使用 `sudo dpkg -i *.deb` 或双击安装
+  - `.rpm`: 使用 `sudo rpm -i *.rpm` 或双击安装
+
+### 选择合适的安装包
+
+- **普通用户**:
+  - macOS: 使用 `.dmg` 安装包
+  - Windows: 使用安装版 (`Fusion.AI.Setup.1.0.0.exe`)
+  - Linux: 根据发行版选择 `.deb`、`.rpm` 或通用的 `.AppImage`
+
+- **特殊需求用户**:
+  - 无管理员权限: 使用便携版 (Windows) 或 AppImage (Linux)
+  - 需要便携式使用: Windows 便携版或 macOS 的 `.zip` 版本
+  - ARM 设备: 选择对应的 arm64 版本
+
+## 安装说明（开发者）
 
 ### 环境要求
 
@@ -101,13 +150,20 @@ yarn build
 
 构建产物将保存在 `dist` 目录下。
 
-## 贡献指南
+### 自动发布流程
 
-欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
+项目配置了 GitHub Actions 工作流，可以自动构建和发布新版本：
 
-## 许可证
+1. 当推送带有 `v` 前缀的标签（如 `v1.0.0`）时，会自动触发构建流程
+2. 工作流会在 macOS、Windows 和 Linux 三个平台上构建应用
+3. 构建完成后，会自动创建一个新的 GitHub Release
+4. 所有平台的安装包会被上传到该 Release
 
-MIT License 
+您也可以通过 GitHub 界面手动触发工作流：
+1. 进入项目的 Actions 标签页
+2. 选择 "Build and Release" 工作流
+3. 点击 "Run workflow" 按钮
+4. 选择分支并确认
 
 ## 软件界面展示
 
@@ -119,10 +175,10 @@ MIT License
 - Gemini
 - Grok 
 
-## 下载安装
+## 贡献指南
 
-你可以直接从 [GitHub Releases](https://github.com/Killua67/Fusion_Ai/releases) 页面下载最新版本的安装包：
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
 
-- macOS: 下载 `.dmg` 文件
-- Windows: 下载 `.exe` 文件
-- Linux: 下载 `.AppImage` 文件
+## 许可证
+
+MIT License 
