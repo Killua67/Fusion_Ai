@@ -1,6 +1,6 @@
 {
   "name": "fusion-ai",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A desktop app that combines multiple AI chat interfaces",
   "main": "main.js",
   "scripts": {
