@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Fusion AI</title>
     <style>
@@ -12,7 +13,7 @@
             height: 100vh;
             background-color: #f5f5f5;
         }
-        
+
         #webviews-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -22,26 +23,26 @@
             padding: 10px;
             background-color: #f5f5f5;
         }
-        
+
         webview {
             width: 100%;
             height: 100%;
             border: 1px solid #e0e0e0;
             border-radius: 8px;
             background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         #input-container {
             padding: 15px;
             background-color: white;
             border-top: 1px solid #e0e0e0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             gap: 10px;
             align-items: center;
         }
-        
+
         .action-button {
             padding: 12px;
             border: 1px solid #e0e0e0;
@@ -68,7 +69,7 @@
             width: 18px;
             height: 18px;
         }
-        
+
         #user-input {
             flex: 1;
             padding: 12px;
@@ -87,8 +88,13 @@
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .spinning {
@@ -96,6 +102,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="webviews-container">
         <webview id="chatgpt" src="https://chat.openai.com/" partition="persist:chatgpt"></webview>
@@ -106,14 +113,16 @@
 
     <div id="input-container">
         <button id="home-button" class="action-button" title="返回主页">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                <polyline points="9 22 9 12 15 12 15 22" />
             </svg>
         </button>
         <button id="refresh-button" class="action-button" title="刷新所有页面">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3" />
             </svg>
         </button>
         <input type="text" id="user-input" placeholder="输入消息后按回车发送到所有AI助手...">
@@ -124,7 +133,7 @@
         const refreshButton = document.getElementById('refresh-button');
         const homeButton = document.getElementById('home-button');
         const webviews = document.querySelectorAll('webview');
-        
+
         // 主页 URL 映射
         const homeUrls = {
             chatgpt: 'https://chatgpt.com/?model=auto',
@@ -163,16 +172,16 @@
                 }
             });
         });
-        
+
         // 刷新按钮点击事件
         refreshButton.addEventListener('click', () => {
             const refreshIcon = refreshButton.querySelector('svg');
             refreshIcon.classList.add('spinning');
-            
+
             webviews.forEach(webview => {
                 webview.reload();
             });
-            
+
             // 3秒后移除旋转动画
             setTimeout(() => {
                 refreshIcon.classList.remove('spinning');
@@ -219,14 +228,14 @@
             if (e.key === 'Enter') {
                 const message = userInput.value;
                 const escapedMessage = escapeString(message);
-                
+
                 // 将输入框内容复制到剪贴板
                 try {
                     await navigator.clipboard.writeText(message);
                     console.log('消息已复制到剪贴板');
                 } catch (err) {
                     console.error('复制到剪贴板失败:', err);
-                    
+
                     // 备用方法：创建临时文本区域并复制
                     const textArea = document.createElement('textarea');
                     textArea.value = message;
@@ -236,7 +245,7 @@
                     document.body.appendChild(textArea);
                     textArea.focus();
                     textArea.select();
-                    
+
                     try {
                         const successful = document.execCommand('copy');
                         const msg = successful ? '成功' : '失败';
@@ -244,15 +253,15 @@
                     } catch (err) {
                         console.error('备用复制方法也失败:', err);
                     }
-                    
+
                     document.body.removeChild(textArea);
                 }
-                
+
                 // 向每个 webview 发送消息
                 webviews.forEach(webview => {
                     const id = webview.id;
                     const selectors = inputSelectors[id];
-                    
+
                     if (!selectors) return;
 
                     // 注入脚本模拟输入和发送
@@ -284,6 +293,7 @@
                                     // 使用XPath选择器查找Grok的输入框
                                     // 定义可能的XPath路径
                                     const xpaths = [
+                                        '/html/body/div[2]/div[3]/div/div/main/div[2]/div/div[2]/div/div[1]/form/div/div/div[2]/div[1]/div',
                                         '/html/body/div/div/main/div[2]/div[2]/div/form/div/div/div[1]/textarea',
                                         '/html/body/div/div/main/div[2]/div[2]/div/div/form/div/div/div[1]/textarea'
                                     ];
@@ -300,42 +310,58 @@
                                     
                                     // 如果还是找不到，尝试使用CSS选择器
                                     if (!inputElement) {
+                                        inputElement = document.querySelector('.ProseMirror');
+                                    }
+                                    if (!inputElement) {
+                                        inputElement = document.querySelector('div[contenteditable="true"]');
+                                    }
+                                    if (!inputElement) {
                                         inputElement = document.querySelector('form textarea');
                                     }
                                     
                                     if (inputElement) {
-                                        // 隐藏提示词
-                                        const placeholder = document.querySelector('.relative.z-10 span.absolute');
-                                        if (placeholder) {
-                                            placeholder.style.opacity = '0';
-                                            placeholder.style.pointerEvents = 'none';
-                                        }
-                                        
-                                        // 清除现有内容
-                                        inputElement.value = '';
-                                        
                                         // 聚焦输入框
                                         inputElement.focus();
                                         await new Promise(r => setTimeout(r, 100));
                                         
-                                        // 模拟真实的输入过程
-                                        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
-                                        nativeInputValueSetter.call(inputElement, "${escapedMessage}");
-                                        
-                                        // 触发React的input事件
-                                        const reactInputEvent = new Event('input', { bubbles: true, composed: true });
-                                        Object.defineProperty(reactInputEvent, 'target', {value: inputElement});
-                                        Object.defineProperty(reactInputEvent, 'currentTarget', {value: inputElement});
-                                        inputElement.dispatchEvent(reactInputEvent);
-                                        
-                                        // 等待React状态更新
-                                        await new Promise(r => setTimeout(r, 100));
-                                        
-                                        // 触发React的change事件
-                                        const reactChangeEvent = new Event('change', { bubbles: true });
-                                        Object.defineProperty(reactChangeEvent, 'target', {value: inputElement});
-                                        Object.defineProperty(reactChangeEvent, 'currentTarget', {value: inputElement});
-                                        inputElement.dispatchEvent(reactChangeEvent);
+                                        if (inputElement.tagName.toLowerCase() === 'textarea') {
+                                            // 隐藏提示词
+                                            const placeholder = document.querySelector('.relative.z-10 span.absolute');
+                                            if (placeholder) {
+                                                placeholder.style.opacity = '0';
+                                                placeholder.style.pointerEvents = 'none';
+                                            }
+                                            
+                                            // 清除现有内容
+                                            inputElement.value = '';
+                                            
+                                            // 模拟真实的输入过程
+                                            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+                                            nativeInputValueSetter.call(inputElement, "${escapedMessage}");
+                                            
+                                            // 触发React的input事件
+                                            const reactInputEvent = new Event('input', { bubbles: true, composed: true });
+                                            Object.defineProperty(reactInputEvent, 'target', {value: inputElement});
+                                            Object.defineProperty(reactInputEvent, 'currentTarget', {value: inputElement});
+                                            inputElement.dispatchEvent(reactInputEvent);
+                                            
+                                            await new Promise(r => setTimeout(r, 100));
+                                            
+                                            const reactChangeEvent = new Event('change', { bubbles: true });
+                                            Object.defineProperty(reactChangeEvent, 'target', {value: inputElement});
+                                            Object.defineProperty(reactChangeEvent, 'currentTarget', {value: inputElement});
+                                            inputElement.dispatchEvent(reactChangeEvent);
+                                        } else if (inputElement.isContentEditable) {
+                                            // ProseMirror/ContentEditable 处理
+                                            inputElement.innerHTML = '';
+                                            const p = document.createElement('p');
+                                            p.textContent = "${escapedMessage}";
+                                            inputElement.appendChild(p);
+                                            
+                                            // 触发 input 事件
+                                            const inputEvent = new Event('input', { bubbles: true, composed: true });
+                                            inputElement.dispatchEvent(inputEvent);
+                                        }
                                         
                                         // 等待React状态更新
                                         await new Promise(r => setTimeout(r, 100));
@@ -412,10 +438,11 @@
                         })();
                     `);
                 });
-                
+
                 userInput.value = '';
             }
         });
     </script>
 </body>
-</html> 
+
+</html>
